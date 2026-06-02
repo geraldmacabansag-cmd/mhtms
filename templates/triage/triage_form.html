@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block title %}Triage: {{ patient.full_name }}{% endblock %}
+{% block page_title %}Record Triage{% endblock %}
+{% block content %}
+<div class="card mb-3" style="background:linear-gradient(135deg,#0f4c81,#1a6bb5);color:#fff;border:none;">
+  <div class="card-body">
+    <h5 style="margin:0;font-size:16px;">🏥 Triaging: <strong>{{ patient.full_name }}</strong></h5>
+    <small style="opacity:0.8;">{{ patient.patient_id }} · {{ patient.age }} years old · {{ patient.get_gender_display }}</small>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header"><h5>📋 Triage Assessment Form</h5></div>
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-section">
+        <div class="form-section-title">🌡️ Vital Signs</div>
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label fw-semibold" style="font-size:13px;">Temperature (°C) *</label>
+            {{ form.temperature }}
+          </div>
+          <div class="col-md-2">
+            <label class="form-label fw-semibold" style="font-size:13px;">BP Systolic *</label>
+            {{ form.blood_pressure_systolic }}
+            <small class="text-muted">mmHg</small>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label fw-semibold" style="font-size:13px;">BP Diastolic *</label>
+            {{ form.blood_pressure_diastolic }}
+            <small class="text-muted">mmHg</small>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label fw-semibold" style="font-size:13px;">Heart Rate *</label>
+            {{ form.heart_rate }}
+            <small class="text-muted">bpm</small>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label fw-semibold" style="font-size:13px;">Resp. Rate *</label>
+            {{ form.respiratory_rate }}
+            <small class="text-muted">br/min</small>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label fw-semibold" style="font-size:13px;">O₂ Saturation *</label>
+            {{ form.oxygen_saturation }}
+            <small class="text-muted">%</small>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label fw-semibold" style="font-size:13px;">Weight</label>
+            {{ form.weight }}
+            <small class="text-muted">kg</small>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label fw-semibold" style="font-size:13px;">Height</label>
+            {{ form.height }}
+            <small class="text-muted">cm</small>
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">🗣️ Symptoms &amp; Complaint</div>
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label fw-semibold" style="font-size:13px;">Chief Complaint *</label>
+            {{ form.chief_complaint }}
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold" style="font-size:13px;">Symptoms Description *</label>
+            {{ form.symptoms_description }}
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold" style="font-size:13px;">Additional Notes</label>
+            {{ form.notes }}
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">🚦 Priority Level</div>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label fw-semibold" style="font-size:13px;">Triage Priority *</label>
+            {{ form.priority }}
+          </div>
+          <div class="col-md-8">
+            <div style="background:#f8fafc;border-radius:8px;padding:12px;font-size:12px;margin-top:24px;">
+              <strong>Priority Guide:</strong>
+              <span class="badge bg-danger ms-2">🔴 Critical</span> Life-threatening
+              <span class="badge bg-warning ms-2">🟠 High</span> Urgent
+              <span class="badge bg-info ms-2">🟡 Medium</span> Semi-urgent
+              <span class="badge bg-success ms-2">🟢 Low</span> Non-urgent
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-check-lg me-1"></i>Submit Triage &amp; Add to Queue
+        </button>
+        <a href="{% url 'patient_detail' patient.pk %}" class="btn btn-outline-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

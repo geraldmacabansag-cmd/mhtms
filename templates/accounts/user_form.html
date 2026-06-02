@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block content %}
+
+{% if not edit_mode %}
+<!-- Success banner after creation -->
+{% if messages %}
+{% for msg in messages %}
+<div class="alert-custom alert-success mb-3" style="font-size:14px;">
+  <i class="bi bi-check-circle-fill me-2"></i>{{ msg }}
+  <a href="{% url 'user_list' %}" class="ms-3 btn btn-sm btn-success" style="font-size:12px;">View All Users</a>
+</div>
+{% endfor %}
+{% endif %}
+{% endif %}
+
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-header">
+        <h5>
+          {% if edit_mode %}✏️ Edit User — {{ target_user.username }}
+          {% else %}➕ Create New User{% endif %}
+        </h5>
+      </div>
+      <div class="card-body">
+        <form method="post" id="userForm">
+          {% csrf_token %}
+
+          <!-- Name Row -->
+          <div class="form-section">
+            <div class="form-section-title">👤 Personal Information</div>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label fw-semibold" style="font-size:13px;">First Name *</label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}<div class="text-danger" style="font-size:12px;">{{ form.first_name.errors }}</div>{% endif %}
+              </div>
+              <div class="col-md-2">
+                <label class="form-label fw-semibold" style="font-size:13px;">M.I. <span class="text-muted">(opt)</span></label>
+                {{ form.middle_initial }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" style="font-size:13px;">Last Name *</label>
+                {{ form.last_name }}
+                {% if form.last_name.errors %}<div class="text-danger" style="font-size:12px;">{{ form.last_name.errors }}</div>{% endif %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" style="font-size:13px;">Username *</label>
+                {{ form.username }}
+                {% if form.username.errors %}<div class="text-danger" style="font-size:12px;">{{ form.username.errors }}</div>{% endif %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" style="font-size:13px;">Email</label>
+                {{ form.email }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" style="font-size:13px;">Phone</label>
+                {{ form.phone }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" style="font-size:13px;">License Number</label>
+                {{ form.license_number }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Role & Department -->
+          <div class="form-section">
+            <div class="form-section-title">🏥 Role &amp; Department</div>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label fw-semibold" style="font-size:13px;">Role *</label>
+                {{ form.role }}
+                {% if form.role.errors %}<div class="text-danger" style="font-size:12px;">{{ form.role.errors }}</div>{% endif %}
+              </div>
+              <div class="col-md-8">
+                <label class="form-label fw-semibold" style="font-size:13px;">Department *</label>
+                {{ form.department }}
+                {% if form.department.errors %}<div class="text-danger" style="font-size:12px;">{{ form.department.errors }}</div>{% endif %}
+                <div style="font-size:11px;color:#64748b;margin-top:4px;">
+                  Staff in a department can only see patients assigned to that department.
+                </div>
+              </div>
+              {% if edit_mode %}
+              <div class="col-md-4">
+                <label class="form-label fw-semibold" style="font-size:13px;">Active Status</label>
+                <div class="form-check mt-2">
+                  {{ form.is_active }}
+                  <label class="form-check-label" style="font-size:13px;">Active Account</label>
+                </div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          {% if not edit_mode %}
+          <!-- Password -->
+          <div class="form-section">
+            <div class="form-section-title">🔑 Password</div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" style="font-size:13px;">Password *</label>
+                <div style="position:relative;">
+                  {{ form.password1 }}
+                  <button type="button" onclick="togglePwd('id_password1','eye1')"
+                    style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#64748b;">
+                    <i class="bi bi-eye" id="eye1"></i>
+                  </button>
+                </div>
+                {% if form.password1.errors %}<div class="text-danger" style="font-size:12px;">{{ form.password1.errors }}</div>{% endif %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold" style="font-size:13px;">Confirm Password *</label>
+                <div style="position:relative;">
+                  {{ form.password2 }}
+                  <button type="button" onclick="togglePwd('id_password2','eye2')"
+                    style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#64748b;">
+                    <i class="bi bi-eye" id="eye2"></i>
+                  </button>
+                </div>
+                {% if form.password2.errors %}<div class="text-danger" style="font-size:12px;">{{ form.password2.errors }}</div>{% endif %}
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="d-flex gap-2 mt-2">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-check-lg me-1"></i>
+              {% if edit_mode %}Update User{% else %}Create User{% endif %}
+            </button>
+            <a href="{% url 'user_list' %}" class="btn btn-outline-secondary">Cancel</a>
+            {% if not edit_mode %}
+            <button type="button" onclick="clearForm()" class="btn btn-outline-danger ms-auto">
+              <i class="bi bi-x-lg me-1"></i>Clear Form
+            </button>
+            {% endif %}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Department guide sidebar -->
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-header"><h5>🏥 Department Access Guide</h5></div>
+      <div class="card-body p-0">
+        {% with depts=form.fields.department.choices %}
+        <table class="table-custom">
+          <thead><tr><th>Department</th><th>Sees</th></tr></thead>
+          <tbody>
+            <tr><td>🚨 Triage / Emergency</td><td><small class="text-muted">ER patients only</small></td></tr>
+            <tr><td>🏥 OPD</td><td><small class="text-muted">OPD patients only</small></td></tr>
+            <tr><td>💊 Internal Medicine</td><td><small class="text-muted">Internal med patients</small></td></tr>
+            <tr><td>👶 Pediatrics</td><td><small class="text-muted">Pediatric patients</small></td></tr>
+            <tr><td>🤱 OB-GYN</td><td><small class="text-muted">Maternal patients</small></td></tr>
+            <tr><td>🧪 Laboratory</td><td><small class="text-muted">Lab patients</small></td></tr>
+            <tr><td>💊 Pharmacy</td><td><small class="text-muted">Pharmacy patients</small></td></tr>
+            <tr><td>📋 Admitting / Records</td><td><small class="text-muted">Admitting patients</small></td></tr>
+            <tr style="background:#f0f9ff;"><td><strong>🔑 Admin</strong></td><td><strong class="text-primary">All patients — all depts</strong></td></tr>
+          </tbody>
+        </table>
+        {% endwith %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function togglePwd(inputId, iconId) {
+  const input = document.getElementById(inputId);
+  const icon  = document.getElementById(iconId);
+  input.type  = input.type === 'password' ? 'text' : 'password';
+  icon.className = input.type === 'text' ? 'bi bi-eye-slash' : 'bi bi-eye';
+}
+
+function clearForm() {
+  if (!confirm('Clear all fields?')) return;
+  const form = document.getElementById('userForm');
+  form.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]').forEach(el => el.value = '');
+  form.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+}
+
+// Auto-hide department requirement note based on role
+document.querySelector('[name="role"]')?.addEventListener('change', function() {
+  const dept = document.querySelector('[name="department"]');
+  const adminRoles = ['admin'];
+  if (adminRoles.includes(this.value)) {
+    dept.closest('.col-md-8').querySelector('.text-muted').textContent =
+      'Admins have access to all departments.';
+  } else {
+    dept.closest('.col-md-8').querySelector('.text-muted').textContent =
+      'Staff in a department can only see patients assigned to that department.';
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Not Found{% endblock %}
+{% block page_title %}Page Not Found{% endblock %}
+{% block content %}
+<div class="card text-center" style="max-width:500px;margin:40px auto;padding:40px;">
+  <div style="font-size:60px;">🔍</div>
+  <h3 style="margin-top:16px;font-weight:700;">404 — Not Found</h3>
+  <p class="text-muted">The page or resource you're looking for doesn't exist.</p>
+  <a href="{% url 'dashboard' %}" class="btn btn-primary mt-2">← Back to Dashboard</a>
+</div>
+{% endblock %}

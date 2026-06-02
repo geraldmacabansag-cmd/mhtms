@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load triage_tags %}
+{% block title %}Patient Queue{% endblock %}
+{% block page_title %}Patient Queue{% endblock %}
+{% block content %}
+<div class="queue-header">
+  <h4 style="margin:0;font-weight:700;">🏥 Live Patient Queue</h4>
+  <p style="margin:6px 0 0;opacity:0.8;font-size:13px;">
+    Sorted by priority level then arrival time &nbsp;·&nbsp;
+    📍 Dept: <strong>{{ dept_label }}</strong>
+  </p>
+  <div class="queue-counts">
+    <div class="queue-count-item"><strong>{{ waiting_count }}</strong> Waiting</div>
+    <div class="queue-count-item"><strong class="text-warning">{{ critical_count }}</strong> Critical</div>
+  </div>
+</div>
+
+<form method="get" class="card p-3 mb-3">
+  <div class="row g-2 align-items-end">
+    <div class="col-md-4">
+      <input type="text" name="q" value="{{ search }}" class="form-control form-control-sm" placeholder="Search patient name or ID...">
+    </div>
+    <div class="col-md-3">
+      <select name="priority" class="form-select form-select-sm">
+        <option value="">All Priorities</option>
+        <option value="critical" {% if priority_filter == 'critical' %}selected{% endif %}>🔴 Critical</option>
+        <option value="high" {% if priority_filter == 'high' %}selected{% endif %}>🟠 High</option>
+        <option value="medium" {% if priority_filter == 'medium' %}selected{% endif %}>🟡 Medium</option>
+        <option value="low" {% if priority_filter == 'low' %}selected{% endif %}>🟢 Low</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary btn-sm w-100">Filter</button>
+    </div>
+    <div class="col-md-2">
+      <a href="{% url 'patient_queue' %}" class="btn btn-outline-secondary btn-sm w-100">Reset</a>
+    </div>
+  </div>
+</form>
+
+<form method="post" action="{% url 'bulk_action' %}" id="queueForm">
+  {% csrf_token %}
+  <div class="bulk-action-bar" id="bulkBar">
+    <i class="bi bi-check2-square"></i>
+    <span id="selectedCount">0</span> patient(s) selected
+    <select name="bulk_action" class="ms-2">
+      <option value="">Choose action...</option>
+      <option value="discharge">🚪 Discharge All</option>
+      <option value="treat">✅ Mark as Treated</option>
+      <option value="admit">🛏️ Admit All</option>
+      <option value="consult">🩺 Move to Consultation</option>
+    </select>
+    <button type="submit" class="btn btn-light btn-sm ms-2" style="font-size:12px;font-weight:600;"
+      onclick="return confirmBulk()">Apply to Selected</button>
+    <button type="button" class="btn btn-link btn-sm text-white ms-auto" onclick="clearSelection()">Clear</button>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h5 style="margin:0;">
+        <input type="checkbox" id="selectAll" class="form-check-input me-2" onchange="toggleAll(this)">
+        Active Patients
+      </h5>
+      <small class="text-muted">{{ consultations.paginator.count }} result(s)</small>
+    </div>
+    <table class="table-custom">
+      <thead>
+        <tr>
+          <th style="width:40px;"></th>
+          <th>Patient</th>
+          <th>Priority</th>
+          <th>Vitals</th>
+          <th>Chief Complaint</th>
+          <th>Status</th>
+          <th>Arrived</th>
+          <th>Doctor</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in consultations %}
+        <tr class="priority-{{ c.priority }} {% if c.priority == 'critical' %}critical-row{% endif %}">
+          <td>
+            <input type="checkbox" name="consultation_ids" value="{{ c.pk }}"
+              class="form-check-input row-check" onchange="updateBulkBar()">
+          </td>
+          <td>
+            {% if c.priority == 'critical' %}
+            <span style="display:inline-block;animation:criticalPulse 1.5s ease-in-out infinite;">🚨</span>
+            {% endif %}
+            <a href="{% url 'patient_detail' c.patient.pk %}" style="font-weight:600;color:#1e293b;text-decoration:none;">
+              {{ c.patient.full_name }}
+            </a><br>
+            <small class="text-muted">{{ c.patient.patient_id }} · {{ c.patient.age }}y {{ c.patient.gender }}</small>
+          </td>
+          <td>{% show_priority_badge c.priority %}</td>
+          <td>
+            {% if c.triage_record %}
+            <small>
+              🌡️ {{ c.triage_record.temperature }}°C<br>
+              ❤️ {{ c.triage_record.heart_rate }}bpm<br>
+              🩸 {{ c.triage_record.get_blood_pressure }}
+            </small>
+            {% else %}<small class="text-muted">—</small>{% endif %}
+          </td>
+          <td>
+            {% if c.triage_record %}
+            <small>{{ c.triage_record.chief_complaint|truncatechars:40 }}</small>
+            {% else %}<small class="text-muted">—</small>{% endif %}
+          </td>
+          <td>{% show_status_badge c.status %}</td>
+          <td><small class="text-muted">{{ c.arrival_time|timesince }} ago</small></td>
+          <td><small>{{ c.doctor.get_full_name|default:"—" }}</small></td>
+          <td>
+            <a href="{% url 'consultation_detail' c.pk %}" class="btn btn-sm btn-primary" style="font-size:11px;">
+              <i class="bi bi-stethoscope"></i> Consult
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9" class="text-center text-muted py-5">
+          <div style="font-size:40px;">✅</div>
+          <div style="font-weight:600;margin-top:8px;">Queue is clear!</div>
+          <small>No patients currently waiting.</small>
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if consultations.has_other_pages %}
+    <div class="card-body text-center">
+      {% if consultations.has_previous %}<a href="?page={{ consultations.previous_page_number }}" class="btn btn-sm btn-outline-secondary me-1">‹ Prev</a>{% endif %}
+      <span class="text-muted" style="font-size:13px;">Page {{ consultations.number }} of {{ consultations.paginator.num_pages }}</span>
+      {% if consultations.has_next %}<a href="?page={{ consultations.next_page_number }}" class="btn btn-sm btn-outline-secondary ms-1">Next ›</a>{% endif %}
+    </div>
+    {% endif %}
+  </div>
+</form>
+{% endblock %}
+{% block extra_js %}
+<script>
+function updateBulkBar() {
+  const checked = document.querySelectorAll('.row-check:checked').length;
+  document.getElementById('selectedCount').textContent = checked;
+  document.getElementById('bulkBar').classList.toggle('visible', checked > 0);
+}
+function toggleAll(cb) {
+  document.querySelectorAll('.row-check').forEach(c => { c.checked = cb.checked; });
+  updateBulkBar();
+}
+function clearSelection() {
+  document.querySelectorAll('.row-check, #selectAll').forEach(c => { c.checked = false; });
+  updateBulkBar();
+}
+function confirmBulk() {
+  const action = document.querySelector('[name="bulk_action"]').value;
+  const count = document.querySelectorAll('.row-check:checked').length;
+  if (!action) { alert('Please select an action.'); return false; }
+  return confirm(`Apply "${action}" to ${count} patient(s)?`);
+}
+</script>
+{% endblock %}

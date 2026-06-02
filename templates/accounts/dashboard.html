@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load triage_tags %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+  <div>
+    <span style="font-size:13px;color:#64748b;">
+      📍 Viewing data for: <strong style="color:var(--primary);">{{ dept_label }}</strong>
+      {% if user.is_admin_user %}<span class="badge bg-primary ms-2" style="font-size:11px;">Full Access</span>{% endif %}
+    </span>
+  </div>
+</div>
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon">👥</div>
+    <div class="stat-value">{{ stats.total_patients }}</div>
+    <div class="stat-label">Total Patients</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">📋</div>
+    <div class="stat-value">{{ stats.today_patients }}</div>
+    <div class="stat-label">Today's Patients</div>
+  </div>
+  <div class="stat-card critical">
+    <div class="stat-icon">🚨</div>
+    <div class="stat-value text-danger">{{ stats.critical }}</div>
+    <div class="stat-label">Critical Active</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">⏳</div>
+    <div class="stat-value text-warning">{{ stats.waiting }}</div>
+    <div class="stat-label">Waiting</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">🩺</div>
+    <div class="stat-value text-primary">{{ stats.under_consultation }}</div>
+    <div class="stat-label">In Consultation</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">✅</div>
+    <div class="stat-value text-success">{{ stats.treated_today }}</div>
+    <div class="stat-label">Treated Today</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">🛏️</div>
+    <div class="stat-value text-info">{{ stats.admitted }}</div>
+    <div class="stat-label">Admitted</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">🚪</div>
+    <div class="stat-value">{{ stats.discharged_today }}</div>
+    <div class="stat-label">Discharged Today</div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <h5><i class="bi bi-list-ul me-2 text-primary"></i>Active Queue (Top Priority)</h5>
+        <a href="{% url 'patient_queue' %}" class="btn btn-sm btn-outline-primary" style="font-size:12px;">View All</a>
+      </div>
+      <div class="card-body p-0">
+        <table class="table-custom">
+          <thead>
+            <tr>
+              <th>Patient</th><th>Priority</th><th>Status</th><th>Arrival</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in recent_consultations %}
+            <tr class="priority-{{ c.priority }}">
+              <td>
+                {% if c.priority == 'critical' %}<span class="critical-pulse me-1">🔴</span>{% endif %}
+                <strong>{{ c.patient.full_name }}</strong><br>
+                <small class="text-muted">{{ c.patient.patient_id }}</small>
+              </td>
+              <td>{% show_priority_badge c.priority %}</td>
+              <td>{% show_status_badge c.status %}</td>
+              <td><small class="text-muted">{{ c.arrival_time|timesince }} ago</small></td>
+              <td>
+                {% if user.role == 'doctor' or user.role == 'admin' or user.is_staff %}
+                <a href="{% url 'consultation_detail' c.pk %}" class="btn btn-sm btn-outline-primary" style="font-size:11px;">Consult</a>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-4">No active patients in queue</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card h-100">
+      <div class="card-header">
+        <h5><i class="bi bi-clock-history me-2 text-primary"></i>Recent Activity</h5>
+      </div>
+      <div class="card-body p-0">
+        {% for log in recent_audit %}
+        <div style="padding:10px 16px;border-bottom:1px solid #f1f5f9;font-size:12px;">
+          <div style="font-weight:600;color:#1e293b;">{{ log.user.get_full_name|default:log.user.username }}</div>
+          <div style="color:#64748b;">{{ log.description|truncatechars:60 }}</div>
+          <div style="color:#94a3b8;font-size:11px;">{{ log.timestamp|timesince }} ago</div>
+        </div>
+        {% empty %}
+        <div class="text-center text-muted py-4" style="font-size:13px;">No recent activity</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mt-2">
+  {% if user.role == 'nurse' or user.role == 'admin' or user.is_staff %}
+  <div class="col-md-4">
+    <a href="{% url 'patient_create' %}" style="text-decoration:none;">
+      <div class="card text-center p-4" style="cursor:pointer;transition:all 0.15s;border:2px dashed #cbd5e1;">
+        <div style="font-size:32px;">➕</div>
+        <div style="font-weight:600;margin-top:8px;color:var(--primary);">Register New Patient</div>
+        <div style="font-size:12px;color:var(--muted);">Nurse action</div>
+      </div>
+    </a>
+  </div>
+  {% endif %}
+  {% if user.role == 'doctor' or user.role == 'admin' or user.is_staff %}
+  <div class="col-md-4">
+    <a href="{% url 'patient_queue' %}" style="text-decoration:none;">
+      <div class="card text-center p-4" style="cursor:pointer;transition:all 0.15s;border:2px dashed #cbd5e1;">
+        <div style="font-size:32px;">🩺</div>
+        <div style="font-weight:600;margin-top:8px;color:var(--primary);">Open Patient Queue</div>
+        <div style="font-size:12px;color:var(--muted);">Doctor action</div>
+      </div>
+    </a>
+  </div>
+  {% endif %}
+  <div class="col-md-4">
+    <a href="{% url 'reports' %}" style="text-decoration:none;">
+      <div class="card text-center p-4" style="cursor:pointer;transition:all 0.15s;border:2px dashed #cbd5e1;">
+        <div style="font-size:32px;">📊</div>
+        <div style="font-weight:600;margin-top:8px;color:var(--primary);">View Reports</div>
+        <div style="font-size:12px;color:var(--muted);">Analytics &amp; statistics</div>
+      </div>
+    </a>
+  </div>
+</div>
+{% endblock %}

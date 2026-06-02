@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}User Management{% endblock %}
+{% block page_title %}User Management{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <h5>System Users ({{ users.count }})</h5>
+    <a href="{% url 'user_create' %}" class="btn btn-sm btn-primary" style="font-size:12px;">+ Add User</a>
+  </div>
+  <table class="table-custom">
+    <thead>
+      <tr><th>Username</th><th>Full Name</th><th>Email</th><th>Role</th><th>Department</th><th>Status</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td><strong>{{ u.username }}</strong></td>
+        <td>{{ u.get_full_name|default:"—" }}</td>
+        <td>{{ u.email|default:"—" }}</td>
+        <td>
+          <span class="badge {% if u.role == 'admin' %}bg-danger{% elif u.role == 'doctor' %}bg-primary{% else %}bg-success{% endif %}">
+            {{ u.get_role_display }}
+          </span>
+        </td>
+        <td>{{ u.department|default:"—" }}</td>
+        <td>
+          {% if u.is_active %}<span class="badge bg-success">Active</span>
+          {% else %}<span class="badge bg-secondary">Inactive</span>{% endif %}
+        </td>
+        <td>
+          <a href="{% url 'user_edit' u.pk %}" class="btn btn-sm btn-outline-primary" style="font-size:11px;">Edit</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

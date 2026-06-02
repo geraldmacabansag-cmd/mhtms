@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block title %}Reports{% endblock %}
+{% block page_title %}Reports &amp; Analytics{% endblock %}
+{% block content %}
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon">📅</div>
+    <div class="stat-value">{{ daily_count }}</div>
+    <div class="stat-label">Today's Patients</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">📆</div>
+    <div class="stat-value">{{ weekly_count }}</div>
+    <div class="stat-label">This Week</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">🗓️</div>
+    <div class="stat-value">{{ monthly_count }}</div>
+    <div class="stat-label">This Month</div>
+  </div>
+  <div class="stat-card critical">
+    <div class="stat-icon">🚨</div>
+    <div class="stat-value text-danger">{{ critical_active }}</div>
+    <div class="stat-label">Critical Active</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">🛏️</div>
+    <div class="stat-value text-warning">{{ admitted_total }}</div>
+    <div class="stat-label">Currently Admitted</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">✅</div>
+    <div class="stat-value text-success">{{ treated_total }}</div>
+    <div class="stat-label">Total Treated</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">🚪</div>
+    <div class="stat-value">{{ discharged_total }}</div>
+    <div class="stat-label">Total Discharged</div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header"><h5>🚦 Priority Breakdown</h5></div>
+      <div class="card-body">
+        {% for item in priority_breakdown %}
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+            <span>
+              {% if item.priority == 'critical' %}🔴{% elif item.priority == 'high' %}🟠{% elif item.priority == 'medium' %}🟡{% else %}🟢{% endif %}
+              {{ item.priority|title }}
+            </span>
+            <strong>{{ item.count }}</strong>
+          </div>
+          <div style="background:#e2e8f0;border-radius:4px;height:8px;overflow:hidden;">
+            <div style="height:100%;border-radius:4px;
+              background:{% if item.priority == 'critical' %}#dc3545{% elif item.priority == 'high' %}#fd7e14{% elif item.priority == 'medium' %}#0dcaf0{% else %}#198754{% endif %};
+              width:{{ item.count }}px;max-width:100%;min-width:4px;"></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header"><h5>📊 Status Breakdown</h5></div>
+      <div class="card-body">
+        {% for item in status_breakdown %}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:13px;">
+          <span>{{ item.status|title }}</span>
+          <span class="badge bg-secondary">{{ item.count }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mt-3">
+  <div class="card-header"><h5>🔌 API Endpoints</h5></div>
+  <div class="card-body">
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/api/v1/stats/</span>
+        <span style="font-size:11px;color:#7ee787;margin-left:auto;">Public — No Auth</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="json-block">{"region": "Leyte", "total_patients": {{ daily_count|add:weekly_count }}, "critical_cases": {{ critical_active }}, "treated_cases": {{ treated_total }}, "admitted_cases": {{ admitted_total }}, "discharged_cases": {{ discharged_total }}}</div>
+      </div>
+    </div>
+    <div class="endpoint-card">
+      <div class="endpoint-header">
+        <span class="method-badge method-get">GET</span>
+        <span class="endpoint-path">/api/v1/patients/</span>
+        <span style="font-size:11px;color:#ffa657;margin-left:auto;">Unauthenticated = HIPAA Masked</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="json-block">{"patient_name": "HIPAA Restricted", "diagnosis": "HIPAA Restricted", "address": "HIPAA Restricted", "age_group": "Adult (18-59)", "gender": "M"}</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;">
+      <a href="/api/v1/stats/" target="_blank" class="btn btn-sm btn-outline-light">Open Stats API ↗</a>
+      <a href="/api/v1/patients/" target="_blank" class="btn btn-sm btn-outline-light ms-2">Open Patients API ↗</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

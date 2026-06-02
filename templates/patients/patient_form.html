@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-header"><h5>{{ title }}</h5></div>
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-section">
+        <div class="form-section-title">👤 Personal Information</div>
+        <div class="row g-3">
+          <div class="col-md-6"><label class="form-label fw-semibold" style="font-size:13px;">Full Name *</label>{{ form.full_name }}</div>
+          <div class="col-md-2"><label class="form-label fw-semibold" style="font-size:13px;">Age *</label>{{ form.age }}</div>
+          <div class="col-md-2"><label class="form-label fw-semibold" style="font-size:13px;">Gender *</label>{{ form.gender }}</div>
+          <div class="col-md-2"><label class="form-label fw-semibold" style="font-size:13px;">Blood Type</label>{{ form.blood_type }}</div>
+          <div class="col-md-4"><label class="form-label fw-semibold" style="font-size:13px;">Date of Birth</label>{{ form.date_of_birth }}</div>
+          <div class="col-md-4"><label class="form-label fw-semibold" style="font-size:13px;">Contact Number *</label>{{ form.contact_number }}</div>
+          <div class="col-md-4"><label class="form-label fw-semibold" style="font-size:13px;">Email</label>{{ form.email }}</div>
+          <div class="col-12"><label class="form-label fw-semibold" style="font-size:13px;">Address *</label>{{ form.address }}</div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold" style="font-size:13px;">Department *</label>
+            {{ form.department }}
+            <div style="font-size:11px;color:#64748b;margin-top:3px;">Patient will only be visible to staff in this department.</div>
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">🆘 Emergency Contact</div>
+        <div class="row g-3">
+          <div class="col-md-4"><label class="form-label fw-semibold" style="font-size:13px;">Contact Name *</label>{{ form.emergency_contact_name }}</div>
+          <div class="col-md-4"><label class="form-label fw-semibold" style="font-size:13px;">Contact Number *</label>{{ form.emergency_contact_number }}</div>
+          <div class="col-md-4"><label class="form-label fw-semibold" style="font-size:13px;">Relationship</label>{{ form.emergency_contact_relationship }}</div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">🩺 Medical History</div>
+        <div class="row g-3">
+          <div class="col-md-6"><label class="form-label fw-semibold" style="font-size:13px;">Known Allergies</label>{{ form.known_allergies }}</div>
+          <div class="col-md-6"><label class="form-label fw-semibold" style="font-size:13px;">Existing Conditions</label>{{ form.existing_conditions }}</div>
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-check-lg me-1"></i>Save Patient
+        </button>
+        <a href="{% url 'patient_list' %}" class="btn btn-outline-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

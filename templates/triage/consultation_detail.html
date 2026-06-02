@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load triage_tags %}
+{% block title %}Consultation: {{ consultation.patient.full_name }}{% endblock %}
+{% block page_title %}Consultation{% endblock %}
+{% block content %}
+{% if consultation.priority == 'critical' %}
+<div class="alert-custom alert-danger" style="animation:criticalPulse 2s ease-in-out infinite;">
+  🚨 <strong>CRITICAL PATIENT</strong> — Immediate attention required!
+</div>
+{% endif %}
+
+<div class="row g-3 mb-3">
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header"><h5>👤 Patient Info</h5></div>
+      <div class="card-body">
+        <h4 style="font-weight:700;margin-bottom:4px;">{{ consultation.patient.full_name }}</h4>
+        <div class="text-muted" style="font-size:13px;">{{ consultation.patient.patient_id }}</div>
+        <hr>
+        <table style="font-size:13px;width:100%;">
+          <tr><td class="text-muted">Age</td><td><strong>{{ consultation.patient.age }}</strong></td></tr>
+          <tr><td class="text-muted">Gender</td><td><strong>{{ consultation.patient.get_gender_display }}</strong></td></tr>
+          <tr><td class="text-muted">Blood Type</td><td><strong>{{ consultation.patient.blood_type }}</strong></td></tr>
+          <tr><td class="text-muted">Contact</td><td><strong>{{ consultation.patient.contact_number }}</strong></td></tr>
+          <tr><td class="text-muted">Priority</td><td>{% show_priority_badge consultation.priority %}</td></tr>
+          <tr><td class="text-muted">Arrived</td><td><strong>{{ consultation.arrival_time|timesince }} ago</strong></td></tr>
+        </table>
+        {% if consultation.patient.known_allergies %}
+        <div class="alert-custom alert-warning mt-2" style="font-size:12px;">
+          ⚠️ <strong>Allergies:</strong> {{ consultation.patient.known_allergies }}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    {% if consultation.triage_record %}
+    <div class="card h-100">
+      <div class="card-header"><h5>📊 Triage Vitals</h5></div>
+      <div class="card-body">
+        <div class="row g-2">
+          {% with tr=consultation.triage_record %}
+          <div class="col-6">
+            <div style="background:#f8fafc;border-radius:8px;padding:10px;text-align:center;">
+              <div style="font-size:20px;">🌡️</div>
+              <div style="font-size:18px;font-weight:700;">{{ tr.temperature }}°C</div>
+              <div style="font-size:11px;color:#64748b;">Temperature</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div style="background:#f8fafc;border-radius:8px;padding:10px;text-align:center;">
+              <div style="font-size:20px;">❤️</div>
+              <div style="font-size:18px;font-weight:700;">{{ tr.heart_rate }}</div>
+              <div style="font-size:11px;color:#64748b;">Heart Rate (bpm)</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div style="background:#f8fafc;border-radius:8px;padding:10px;text-align:center;">
+              <div style="font-size:20px;">🩸</div>
+              <div style="font-size:18px;font-weight:700;">{{ tr.get_blood_pressure }}</div>
+              <div style="font-size:11px;color:#64748b;">Blood Pressure</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div style="background:#f8fafc;border-radius:8px;padding:10px;text-align:center;">
+              <div style="font-size:20px;">💨</div>
+              <div style="font-size:18px;font-weight:700;">{{ tr.oxygen_saturation }}%</div>
+              <div style="font-size:11px;color:#64748b;">O₂ Saturation</div>
+            </div>
+          </div>
+          {% endwith %}
+        </div>
+        <div style="margin-top:12px;background:#fff8e1;border-radius:8px;padding:10px;font-size:12px;">
+          <strong>Chief Complaint:</strong><br>{{ consultation.triage_record.chief_complaint }}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header"><h5>🩺 Update Consultation</h5></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label fw-semibold" style="font-size:13px;">Status *</label>
+            {{ form.status }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold" style="font-size:13px;">Diagnosis</label>
+            {{ form.diagnosis }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold" style="font-size:13px;">Treatment Notes</label>
+            {{ form.treatment_notes }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold" style="font-size:13px;">Prescription</label>
+            {{ form.prescription }}
+          </div>
+          <div class="mb-3" id="ward_field" style="display:none;">
+            <label class="form-label fw-semibold" style="font-size:13px;">Ward/Room (if admitted)</label>
+            {{ form.admitted_ward }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold" style="font-size:13px;">Discharge Notes</label>
+            {{ form.discharge_notes }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold" style="font-size:13px;">Follow-up Date</label>
+            {{ form.follow_up_date }}
+          </div>
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-save me-1"></i>Update Consultation
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<a href="{% url 'patient_queue' %}" class="btn btn-outline-secondary btn-sm">
+  ← Back to Queue
+</a>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.querySelector('[name="status"]').addEventListener('change', function() {
+  document.getElementById('ward_field').style.display = this.value === 'admitted' ? 'block' : 'none';
+});
+</script>
+{% endblock %}
