@@ -3,6 +3,7 @@
 {% block title %}Dashboard{% endblock %}
 {% block page_title %}Dashboard{% endblock %}
 {% block content %}
+{% load static %}
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
   <div>
     <span style="font-size:13px;color:#64748b;">
@@ -11,51 +12,113 @@
     </span>
   </div>
 </div>
+<style>
+  .stat-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .stat-card-link .stat-card {
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    cursor: pointer;
+    position: relative;
+  }
+  .stat-card-link .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+    border-color: var(--primary);
+  }
+  .stat-card-link .stat-card::after {
+    content: '→';
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    font-size: 12px;
+    color: var(--primary);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .stat-card-link .stat-card:hover::after {
+    opacity: 1;
+  }
+</style>
+
 <div class="stats-grid">
-  <div class="stat-card">
-    <div class="stat-icon">👥</div>
-    <div class="stat-value">{{ stats.total_patients }}</div>
-    <div class="stat-label">Total Patients</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon">📋</div>
-    <div class="stat-value">{{ stats.today_patients }}</div>
-    <div class="stat-label">Today's Patients</div>
-  </div>
-  <div class="stat-card critical">
-    <div class="stat-icon">🚨</div>
-    <div class="stat-value text-danger">{{ stats.critical }}</div>
-    <div class="stat-label">Critical Active</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon">⏳</div>
-    <div class="stat-value text-warning">{{ stats.waiting }}</div>
-    <div class="stat-label">Waiting</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon">🩺</div>
-    <div class="stat-value text-primary">{{ stats.under_consultation }}</div>
-    <div class="stat-label">In Consultation</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon">✅</div>
-    <div class="stat-value text-success">{{ stats.treated_today }}</div>
-    <div class="stat-label">Treated Today</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon">🛏️</div>
-    <div class="stat-value text-info">{{ stats.admitted }}</div>
-    <div class="stat-label">Admitted</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon">🚪</div>
-    <div class="stat-value">{{ stats.discharged_today }}</div>
-    <div class="stat-label">Discharged Today</div>
-  </div>
+  <!-- Total Patients → Patient List -->
+  <a href="{% url 'patient_list' %}" class="stat-card-link">
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-value">{{ stats.total_patients }}</div>
+      <div class="stat-label">Total Patients</div>
+    </div>
+  </a>
+
+  <!-- Today's Patients → Patient List -->
+  <a href="{% url 'patient_list' %}" class="stat-card-link">
+    <div class="stat-card">
+      <div class="stat-icon">📋</div>
+      <div class="stat-value">{{ stats.today_patients }}</div>
+      <div class="stat-label">Today's Patients</div>
+    </div>
+  </a>
+
+  <!-- Critical Active → Patient Queue -->
+  <a href="{% url 'patient_queue' %}" class="stat-card-link">
+    <div class="stat-card critical">
+      <div class="stat-icon">🚨</div>
+      <div class="stat-value text-danger">{{ stats.critical }}</div>
+      <div class="stat-label">Critical Active</div>
+    </div>
+  </a>
+
+  <!-- Waiting → Patient Queue -->
+  <a href="{% url 'patient_queue' %}" class="stat-card-link">
+    <div class="stat-card">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-value text-warning">{{ stats.waiting }}</div>
+      <div class="stat-label">Waiting</div>
+    </div>
+  </a>
+
+  <!-- In Consultation → Patient Queue -->
+  <a href="{% url 'patient_queue' %}" class="stat-card-link">
+    <div class="stat-card">
+      <div class="stat-icon">🩺</div>
+      <div class="stat-value text-primary">{{ stats.under_consultation }}</div>
+      <div class="stat-label">In Consultation</div>
+    </div>
+  </a>
+
+  <!-- Treated Today → Reports -->
+  <a href="{% url 'reports' %}" class="stat-card-link">
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-value text-success">{{ stats.treated_today }}</div>
+      <div class="stat-label">Treated Today</div>
+    </div>
+  </a>
+
+  <!-- Admitted → Patient Queue -->
+  <a href="{% url 'patient_queue' %}" class="stat-card-link">
+    <div class="stat-card">
+      <div class="stat-icon">🛏️</div>
+      <div class="stat-value text-info">{{ stats.admitted }}</div>
+      <div class="stat-label">Admitted</div>
+    </div>
+  </a>
+
+  <!-- Discharged Today → Reports -->
+  <a href="{% url 'reports' %}" class="stat-card-link">
+    <div class="stat-card">
+      <div class="stat-icon">🚪</div>
+      <div class="stat-value">{{ stats.discharged_today }}</div>
+      <div class="stat-label">Discharged Today</div>
+    </div>
+  </a>
 </div>
 
 <div class="row g-3">
-  <div class="col-lg-8">
+  <div class="{% if user.role == 'admin' or user.is_staff %}col-lg-8{% else %}col-lg-12{% endif %}">
     <div class="card">
       <div class="card-header">
         <h5><i class="bi bi-list-ul me-2 text-primary"></i>Active Queue (Top Priority)</h5>
@@ -94,6 +157,7 @@
     </div>
   </div>
   <div class="col-lg-4">
+    {% if user.role == 'admin' or user.is_staff %}
     <div class="card h-100">
       <div class="card-header">
         <h5><i class="bi bi-clock-history me-2 text-primary"></i>Recent Activity</h5>
@@ -110,6 +174,7 @@
         {% endfor %}
       </div>
     </div>
+    {% endif %}
   </div>
 </div>
 

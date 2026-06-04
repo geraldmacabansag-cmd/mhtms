@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,11 +20,11 @@
   --info: #0dcaf0;
   --bg: #f0f4f8;
   --card-bg: #ffffff;
-  --sidebar-bg: #0f2744;
-  --sidebar-text: #c8d8e8;
+  --sidebar-bg: #0f3c44;
+  --sidebar-text: #fbffff;
   --sidebar-active: #1a6bb5;
-  --text: #1a202c;
-  --muted: #64748b;
+  --text: #0a0a0a;
+  --muted: #111111;
   --border: #e2e8f0;
   --critical-glow: rgba(220, 53, 69, 0.15);
   --font: 'Inter', system-ui, sans-serif;
@@ -43,16 +44,14 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); marg
   padding: 24px 20px 16px;
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
-.sidebar-logo {
+.sidebar img{
   display: flex; align-items: center; gap: 10px;
   font-size: 13px; font-weight: 600; color: #fff; text-decoration: none;
-}
-.sidebar-logo-icon {
   width: 36px; height: 36px; background: var(--primary-light);
   border-radius: 8px; display: flex; align-items: center; justify-content: center;
   font-size: 18px;
 }
-.sidebar-subtitle { font-size: 10px; color: var(--sidebar-text); opacity: 0.6; margin-top: 2px; }
+.sidebar-subtitle { font-size: 10px; color:white ; margin-top: 2px; }
 .sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
 .nav-section { padding: 16px 20px 6px; font-size: 10px; font-weight: 700;
   text-transform: uppercase; letter-spacing: 0.1em; color: rgba(200,216,232,0.4); }
@@ -183,11 +182,11 @@ tr.priority-low { background: rgba(25,135,84,0.05) !important; }
 .json-block { background: #0d1117; padding: 14px; border-radius: 8px; font-family: monospace; font-size: 12px; color: #7ee787; white-space: pre; overflow-x: auto; }
 
 /* ── Login Page ── */
-.login-page { min-height: 100vh; background: linear-gradient(135deg, #0f2744 0%, #1a4b8a 100%);
+.login-page { min-height: 100vh; background: linear-gradient(135deg, #0f2744 0%, #0f3c44 100%);
   display: flex; align-items: center; justify-content: center; padding: 24px; }
 .login-card { background: #fff; border-radius: 16px; width: 100%; max-width: 420px; padding: 40px; }
 .login-logo { text-align: center; margin-bottom: 28px; }
-.login-logo .logo-circle { width: 64px; height: 64px; background: var(--primary);
+.login-logo .logo-circle img{ width: 64px; height: 64px; background: var(--primary);
   border-radius: 16px; margin: 0 auto 12px; display: flex; align-items: center;
   justify-content: center; font-size: 28px; }
 .login-title { font-size: 22px; font-weight: 700; color: var(--primary); }
@@ -253,9 +252,9 @@ body.sidebar-open .hamburger-btn .bar:nth-child(3) { transform: translateY(-7px)
 <div class="sidebar">
   <div class="sidebar-header">
     <a href="{% url 'dashboard' %}" class="sidebar-logo">
-      <div class="sidebar-logo-icon">🏥</div>
+      <img src="{% static 'img/logo.jpg' %}" alt="logoimg">
       <div>
-        <div style="font-size:14px;font-weight:700;color:#fff;">MHTMS</div>
+        <div style="font-size:14px;font-weight:700;color:red">EMERGENCY</div>
         <div class="sidebar-subtitle">Municipal Health & Triage</div>
       </div>
     </a>

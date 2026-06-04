@@ -11,12 +11,12 @@
 <link href="{% static 'css/mhtms.css' %}" rel="stylesheet">
 <style>
   :root {
-    --primary: #63c9c7;
+    --primary: #0f3c44;
     --primary-light: #63c0f9;
     --accent: #e63946;
     --bg: #f0f4f8;
     --card-bg: #ffffff;
-    --sidebar-bg: #1494a0;
+    --sidebar-bg: #0f3c44;
     --text: #1a202c;
     --muted: #64748b;
     --border: #e2e8f0;
@@ -28,7 +28,7 @@
   /* ── Navbar ── */
   .home-navbar {
     position: fixed; top: 0; left: 0; right: 0; z-index: 200;
-    background: #9edbda;
+    background: #0f3c44;
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255,255,255,0.08);
     height: 64px;
@@ -48,7 +48,7 @@
     
   }
   .navbar-brand-text { font-size: 20px; font-weight: 700; color: red;; }
-  .navbar-brand-sub { font-size: 10px; color: black; letter-spacing: 0.04em; }
+  .navbar-brand-sub { font-size: 10px; color: rgb(253, 251, 251); letter-spacing: 0.04em; }
   .navbar-actions { display: flex; align-items: center; gap: 12px; }
   .btn-login {
     display: inline-flex; align-items: center; gap: 7px;
@@ -68,19 +68,35 @@
   }
 
   /* ── Hero ── */
+.hero img{
+    width: 600x;
+    height: 550px;
+    margin-left: -650px;
+    position: absolute;
+    z-index: 1;
+    -webkit-mask-image: linear-gradient(
+        to right,
+        transparent 0%,
+        black 00%,
+        black 70%,
+        transparent 100%
+    );
+  }
+
   .hero {
     min-height: 100vh;
-    background: linear-gradient(145deg, #5ab2ad 0%, #37a7b9 40%, #5ab2ad 100%);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     text-align: center;
     padding: 100px 24px 60px;
     position: relative;
     overflow: hidden;
   }
+
   .hero::before {
     content: '';
     position: absolute; inset: 0;
     background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
   }
   .hero-badge {
     display: inline-flex; align-items: center; gap: 6px;
@@ -91,81 +107,100 @@
     font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85);
     letter-spacing: 0.05em;
     margin-bottom: 28px;
+    z-index: 2;
+
   }
   .hero-title {
     font-size: clamp(36px, 6vw, 62px);
     font-weight: 800;
-    color: #fff;
+    color: rgb(14, 13, 13)909;
     line-height: 1.1;
     margin-bottom: 20px;
     letter-spacing: -0.02em;
+    z-index: 2;
+    margin-right: -400px;
   }
   .hero-title span {
-    background: linear-gradient(90deg, rgb(207, 82, 82), #ad0d15);
+    background: linear-gradient(90deg, rgb(136, 54, 54), #de3b43);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    z-index: 2;
   }
   .hero-subtitle {
     font-size: clamp(15px, 2vw, 18px);
-    color: rgba(14, 14, 15, 0.8);
+    color: rgba(8, 8, 8, 0.8);
     max-width: 540px;
     line-height: 1.6;
     margin-bottom: 40px;
+    z-index: 2;
+    margin-right: -400px;
   }
   .hero-cta {
     display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
     margin-bottom: 60px;
+    z-index: 2;
+    margin-right: -450px;
   }
   .btn-hero-primary {
     display: inline-flex; align-items: center; gap: 8px;
-    background: #fff;
-    color: var(--primary);
+    color: black;
     padding: 13px 30px;
     border-radius: 10px;
     font-size: 14px; font-weight: 700;
     text-decoration: none;
     transition: transform 0.2s, box-shadow 0.2s;
     border: none; cursor: pointer;
+    z-index: 2;
+    border: 2px , solid, black;
   }
   .btn-hero-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 24px rgba(83, 93, 188, 0.2);
     color: var(--primary);
+    z-index: 2;
   }
   .btn-hero-outline {
     display: inline-flex; align-items: center; gap: 8px;
     background: transparent;
-    color: #fff;
+    color: #131212;
     padding: 13px 30px;
     border-radius: 10px;
     font-size: 14px; font-weight: 600;
     text-decoration: none;
     border: 2px solid rgba(255,255,255,0.35);
     transition: border-color 0.2s, background 0.2s;
+    z-index: 2;
+    border: 2px, solid, black; 
   }
   .btn-hero-outline:hover {
     border-color: rgba(255,255,255,0.7);
     background: rgba(255,255,255,0.08);
-    color: #fff;
+    color: #191818;
+    z-index: 2;
   }
 
   /* Hero stats */
   .hero-stats {
     display: flex; gap: 40px; flex-wrap: wrap; justify-content: center;
+    z-index: 2;
+    margin-right: -400px;
   }
-  .hero-stat { text-align: center; }
-  .hero-stat-value { font-size: 28px; font-weight: 800; color: #fff; }
-  .hero-stat-label { font-size: 12px; color: rgba(200,216,232,0.6); margin-top: 2px; }
+  .hero-stat { text-align: center; z-index: 2;}
+  .hero-stat-value { font-size: 28px; font-weight: 800; color: #0f0f0f; z-index: 2;}
+  .hero-stat-label { font-size: 12px; color: rgba(12, 12, 12, 0.6); margin-top: 2px; z-index: 2; }
 
   /* ── Features Section ── */
-  .section { padding: 80px 24px; }
+  .section { 
+    padding: 80px 24px;
+    background-color: #0f3c44;
+  }
   .section-label {
     font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
     text-transform: uppercase; color: var(--primary-light);
     margin-bottom: 12px;
   }
-  .section-title { font-size: clamp(26px, 4vw, 36px); font-weight: 800; color: var(--text); margin-bottom: 14px; }
+  .section-title { font-size: clamp(26px, 4vw, 36px); font-weight: 800; color: white; margin-bottom: 14px; }
   .section-sub { font-size: 15px; color: var(--muted); max-width: 500px; line-height: 1.65; }
 
   .features-grid {
@@ -194,7 +229,7 @@
 
   /* ── Workflow Section ── */
   .workflow-section {
-    background: linear-gradient(135deg, #0f2744 0%, #0f4c81 100%);
+    background: linear-gradient(135deg, #0f3c44 0%, #0f7281 100%);
     padding: 80px 24px;
   }
   .workflow-steps {
@@ -243,7 +278,6 @@
     position: relative; overflow: hidden;
   }
   .cta-card::before {
-    content: '🏥';
     position: absolute; right: 32px; bottom: 20px;
     font-size: 100px; opacity: 0.08;
     line-height: 1;
@@ -259,9 +293,9 @@
     flex-wrap: wrap; gap: 12px;
   }
   .footer-brand { display: flex; align-items: center; gap: 10px; }
-  .footer-brand-text { font-size: 13px; font-weight: 600; color: #fff; }
-  .footer-brand-sub { font-size: 11px; color: rgba(200,216,232,0.45); }
-  .footer-copy { font-size: 11px; color: rgba(200,216,232,0.4); }
+  .footer-brand-text { font-size: 13px; font-weight: 600; color: red; }
+  .footer-brand-sub { font-size: 11px; color: rgba(160, 164, 164, 0.4); }
+  .footer-copy { font-size: 11px; color: rgba(160, 164, 164, 0.4); }
 
   @media (max-width: 640px) {
     .home-navbar { padding: 0 20px; }
@@ -295,7 +329,13 @@
 </nav>
 
 <!-- ── Hero Section ── -->
+
 <section class="hero">
+
+  <div class="imgcontainer">
+    <img  src="static/img/hpic.jpg" alt="hospital image">
+  </div>
+  
   <div class="hero-badge">
     <i class="bi bi-geo-alt-fill"></i>
     Leyte, Eastern Visayas, Philippines
@@ -334,6 +374,7 @@
       <div class="hero-stat-label">Activity Logged</div>
     </div>
   </div>
+
 </section>
 
 <!-- ── Features Section ── -->
@@ -423,11 +464,11 @@
   <div class="footer-brand">
     <div style="width:30px;height:30px;background:#1a6bb5;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;">🏥</div>
     <div>
-      <div class="footer-brand-text">MHTMS</div>
+      <div class="footer-brand-text">EMERGENCY</div>
       <div class="footer-brand-sub">Municipal Health & Triage Management System</div>
     </div>
   </div>
-  <div class="footer-copy">© {% now "Y" %} MHTMS · Leyte, Eastern Visayas, Philippines</div>
+  <div class="footer-copy">© {% now "Y" %} IT3A · Leyte, Eastern Visayas, Philippines</div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

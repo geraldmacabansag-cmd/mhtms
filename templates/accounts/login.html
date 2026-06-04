@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 {% block auth_content %}
+{% load static %}
 <div class="login-page">
   <div class="login-card">
     <div class="login-logo">
-      <div class="logo-circle">🏥</div>
-      <div class="login-title">EMERGENCY</div>
+      <div class="logo-circle"><img src="{% static 'img/logo.jpg' %}" alt="logo"></div>
+      <div class="login-title" style="color:red;">EMERGENCY</div>
       <div class="login-subtitle">Municipal Health &amp; Triage Management System</div>
       <div class="login-subtitle" style="margin-top:4px;font-size:11px;color:#94a3b8;">Leyte, Eastern Visayas, Philippines</div>
     </div>
@@ -38,6 +39,9 @@
       <button type="submit" class="btn btn-primary w-100" style="border-radius:8px;padding:10px;font-weight:600;">
         <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
       </button>
+      <a href="{% url 'home' %}" class="btn btn-outline-secondary w-100 mt-2" style="border-radius:8px;padding:10px;font-weight:600;">
+        <i class="bi bi-house me-2"></i>Back to Homepage
+      </a>
     </form>
     <div style="margin-top:24px;padding-top:16px;border-top:1px solid #e2e8f0;font-size:11px;color:#94a3b8;text-align:center;">
       🔒 Secure access — All activity is logged and monitored.
