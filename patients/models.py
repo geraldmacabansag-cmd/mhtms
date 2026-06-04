@@ -67,6 +67,7 @@ class AuditLog(models.Model):
         ('discharge', 'Discharged'),
         ('view', 'Viewed'),
         ('login', 'Login'),
+        ('login_failed', 'Failed Login'),
         ('logout', 'Logout'),
     ]
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)

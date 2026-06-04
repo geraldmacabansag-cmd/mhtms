@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block auth_content %}
 {% load static %}
+{% load honeypot %}
 <div class="login-page">
   <div class="login-card">
     <div class="login-logo">
@@ -9,16 +10,26 @@
       <div class="login-subtitle">Municipal Health &amp; Triage Management System</div>
       <div class="login-subtitle" style="margin-top:4px;font-size:11px;color:#94a3b8;">Leyte, Eastern Visayas, Philippines</div>
     </div>
+
     {% for msg in messages %}
     <div class="alert-custom alert-{{ msg.tags }} mb-3">{{ msg }}</div>
     {% endfor %}
+
     {% if form.errors %}
     <div class="alert-custom alert-danger mb-3">
       <i class="bi bi-exclamation-triangle-fill me-1"></i> Invalid username or password.
     </div>
     {% endif %}
+
     <form method="post">
       {% csrf_token %}
+
+      {# ── Honeypot trap field (Member 5) ─────────────────────────────── #}
+      {# This field is invisible to real users. Bots fill it in and get    #}
+      {# silently blocked. The render_honeypot_field tag adds the hidden   #}
+      {# input plus CSS to hide it from human view.                        #}
+      {% render_honeypot_field "phone_number" %}
+
       <div class="mb-3">
         <label class="form-label fw-semibold" style="font-size:13px;">Username</label>
         {{ form.username }}
@@ -36,6 +47,7 @@
           </button>
         </div>
       </div>
+
       <button type="submit" class="btn btn-primary w-100" style="border-radius:8px;padding:10px;font-weight:600;">
         <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
       </button>
@@ -43,6 +55,7 @@
         <i class="bi bi-house me-2"></i>Back to Homepage
       </a>
     </form>
+
     <div style="margin-top:24px;padding-top:16px;border-top:1px solid #e2e8f0;font-size:11px;color:#94a3b8;text-align:center;">
       🔒 Secure access — All activity is logged and monitored.
     </div>

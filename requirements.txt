@@ -1,5 +1,6 @@
 django>=4.2
 djangorestframework>=3.14
+djangorestframework-simplejwt>=5.3
 django-crispy-forms>=2.0
 crispy-bootstrap5>=0.7
 Pillow>=10.0
@@ -8,3 +9,8 @@ gunicorn>=21.2
 psycopg2-binary>=2.9
 dj-database-url>=2.1
 python-decouple>=3.8
+# ── DevSecOps & Compliance (Member 5) ────────────────────────────────
+django-axes>=6.4           # login lockout — blocks brute-force attacks
+django-honeypot>=1.1       # honeypot trap field on login form
+bandit>=1.7                # static code security scanner
+pip-audit>=2.7             # package vulnerability scanner
